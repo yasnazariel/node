@@ -27,6 +27,32 @@ Base is a secure, low-cost, developer-friendly Ethereum L2 built on Optimism's [
    ```bash
    # For mainnet (default):
    docker compose up --build
+   
+   ## Docker Compose Example
+To make starting your node easier, here's a basic docker-compose configuration:
+version: '3.8'
+services:
+op-geth:
+image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth:latest
+ports:
+- "8545:8545"
+- "8546:8546"
+volumes:
+- geth-data:/data
+environment:
+- GETH_DATADIR=/data
+
+op-node:
+image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node:latest
+depends_on:
+- op-geth
+environment:
+- OP_NODE_L1_ETH_RPC=https://mainnet.infura.io/v3/YOUR_KEY
+
+volumes:
+geth-data:
+> **Tip:**  
+> For production environments, scale out by using Docker Compose extensions such as monitoring containers or more robust storage volumes.
 
    # For testnet:
    NETWORK_ENV=.env.sepolia docker compose up --build
@@ -135,6 +161,15 @@ Snapshots are available to help you sync your node more quickly. See [docs.base.
 | Testnet | ✅     |
 
 ## Troubleshooting
+
+### Common troubleshooting
+
+- **Error: Port already in use**  
+  Check if ports 8545/8546 are open and not blocked by other processes. Stop other Ethereum node containers running on the same ports.
+- **Sync issues or slow performance**  
+  Make sure your RPC endpoints are correctly set and your SSD is fast enough.
+- **Authentication or environment variable errors**  
+  Double-check your .env file and environment variables. See `.env.mainnet` for full details.
 
 For support please join our [Discord](https://discord.gg/buildonbase) post in `🛠｜node-operators`. You can alternatively open a new GitHub issue.
 
